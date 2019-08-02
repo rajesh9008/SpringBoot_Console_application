@@ -1,5 +1,6 @@
 package com.college.medicare.services;
 
+import com.college.medicare.Utils.Utils;
 import com.college.medicare.domin.Doctor;
 import com.college.medicare.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @Service
 public class DashBoard {
@@ -41,9 +41,8 @@ public class DashBoard {
         System.out.println("\n");
 
 
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter an option in number: ");
-        int option = scanner.nextInt();
+        int option = Utils.readInt(5);
         switch (option) {
             case 1:
                 appointment.bookAppointment();
