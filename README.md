@@ -7,4 +7,5 @@ View a doctor’s entire schedule.
 View a patient’s appointment details.
 
 
-Create exuctable Jar: mvn clean compile assembly:single
+#Create exuctable Jar: mvn package
+
