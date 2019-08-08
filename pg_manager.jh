@@ -1,0 +1,283 @@
+
+DEFAULT_MAX_LENGTH = 100
+DEFAULT_ADDRESS_LENGTH = 300
+DEFAULT_MOBILE_LENGTH = 10
+DEFAULT_MIN = 6
+
+@paginate(pager)
+entity Pg {
+name String required maxlength(DEFAULT_MAX_LENGTH),
+pgFor Gender required,
+address String required maxlength(DEFAULT_ADDRESS_LENGTH),
+landmark String maxlength(DEFAULT_MAX_LENGTH),
+city String maxlength(DEFAULT_MAX_LENGTH),
+state String maxlength(DEFAULT_MAX_LENGTH),
+country String maxlength(DEFAULT_MAX_LENGTH),
+zipcode Long required maxlength(DEFAULT_MIN),
+state State required,
+country Country required
+}
+
+enum Gender{
+Male,
+Female,
+Other
+}
+
+enum PaymentType{
+UPI,
+NetBanking,
+Mobile_UPI
+}
+
+entity PaymentDetails{
+paymentType PaymentType required,
+upi UPI,
+bankName String,
+branchName String,
+ifsc String,
+accountHolder String,
+mobileNumberUpi String,
+}
+
+entity FoodType{
+veg Boolean,
+nonVVeg Boolean
+}
+
+enum State {
+ANDHRA_PRADESH,
+  ARUNACHAL_PRADESH,
+  ASSAM,
+  BIHAR,
+  CHHATTISGARH,
+  GOA,
+  GUJARAT,
+  HARYANA,
+  HIMACHAL_PRADESH,
+  JAMMU_AND_KASHMIR,
+  JHARKHAND,
+  KARNATAKA,
+  KERALA,
+  MADHYA_PRADESH,
+  MAHARASHTRA,
+  MANIPUR,
+  MEGHALAYA,
+  MIZORAM,
+  NAGALAND,
+  ODISHA,
+  PUNJAB,
+  RAJASTHAN,
+  SIKKIM,
+  TAMILNADU,
+  TELANGANA,
+  TRIPURA,
+  UTTARPRADESH,
+  UTTARAKHAND,
+  WESTBENGAL
+}
+
+entity Amenities{
+food Boolean, 
+internet Boolean, 
+ielevison Boolean,
+washingMachine Boolean,
+refrigerator Boolean,
+ac Boolean, 
+gym Boolean, 
+swimmingPool Boolean, 
+bikeParking Boolean,
+carParking Boolean
+}
+
+enum Country{
+India
+}
+
+enum SharingType{
+Single,
+Two_sharing,
+Three_Sharing,
+Four_Sharing,
+Five_Sharing,
+Six_Sharing,
+Seven_Sharing,
+Eight_Sharing,
+Nine_Sharing,
+Ten_Sharing
+}
+entity Bed{
+bedNumber String,
+isAvailable Boolean,
+isUnActivate Boolean
+}
+
+
+entity Room{
+roomNumber String,
+isUnActivate Boolean ,
+sharingType SharingType
+}
+
+entity Floor{
+floorNumber String
+}
+enum StaffRole {
+Manger,
+Chef,
+Maid,
+Cleaner,
+Driver,
+Helper,
+Plumer,
+Electrician,
+Security,
+Accountant,
+Attender,
+Recetionist, 
+Other
+}
+
+entity Notification {
+rentDue Boolean,
+rentCollection Boolean,
+issurRelated Boolean,
+booking Boolean,
+checkout Boolean
+}
+
+entity Staff{
+name String required maxlength(DEFAULT_MAX_LENGTH),
+role StaffRole required,
+mobileNumber String maxlength(DEFAULT_MOBILE_LENGTH),
+emailId String maxlength(DEFAULT_MAX_LENGTH),
+address String maxlength(DEFAULT_ADDRESS_LENGTH)
+}
+entity Block{
+blockNumber String
+}
+
+// using @MapsId
+relationship OneToOne {
+	Pg{pgFoodType} to FoodType{pg(name)}
+}
+
+relationship OneToOne {
+	Pg{pgNotification} to Notification{pg(name)}
+}
+relationship OneToMany {
+    Room{bedNumbers} to Bed{bedNumber}
+}
+
+relationship OneToOne {
+	Pg{pgAmenities} to Amenities{pg(name)}
+}
+
+relationship OneToMany {
+    Pg{pgStaffs} to Staff{pg(name)}
+}
+
+relationship OneToMany {
+    Pg{pgBlocks} to Block{pg(name)}
+}
+
+relationship OneToMany {
+    Pg{pgPaymentDetails} to PaymentDetails{pg(name)}
+}
+
+relationship OneToMany {
+    Floor{roomNumbes} to Room{roomNumber}
+}
+relationship OneToMany {
+    Block{floorNumbers} to Floor{floorNumber}
+}
+
+relationship OneToOne {
+    Inmate{bedId} to Bed{bedId}
+}
+
+relationship OneToOne {
+    Inmate{roomId} to Room{roomId}
+}
+relationship OneToOne {
+    Inmate{floorId} to Floor{floorId}
+}
+relationship OneToMany {
+    Pg{pgInmates} to Inmate{pg(name)}
+}
+enum CheckInType{
+Monthly,
+Quarterly,
+Half_Yearly,
+Yearly,
+Weekly,
+Daily
+}
+
+@paginate(pager)
+@search(elasticsearch)
+entity Inmate {
+name String required maxlength(DEFAULT_MAX_LENGTH),
+mobileNumber String required,
+mailId String maxlength(DEFAULT_MAX_LENGTH),
+bookingDate String,
+checkInDate String,
+bookingAmount Long maxlength(DEFAULT_MAX_LENGTH),
+comments String maxlength(DEFAULT_MAX_LENGTH)
+isBooked Boolean,
+emergencyContactName String maxlength(DEFAULT_MAX_LENGTH),
+emergencyContactNumber String maxlength(DEFAULT_MOBILE_LENGTH),
+companyOrCollege String maxlength(DEFAULT_MAX_LENGTH),
+companyOrCollegeLocation String maxlength(DEFAULT_ADDRESS_LENGTH),
+otherDetails String maxlength(DEFAULT_ADDRESS_LENGTH),
+checkinType CheckInType,
+checkoutNotice String
+}
+
+relationship OneToOne {
+    Inmate{advancePayment} to PaymentAmount{paymentId}
+}
+relationship OneToOne {
+    Inmate{rentPayment} to PaymentAmount{paymentId}
+}
+entity PaymentAmount {
+paid Long,
+pendingAmount Long
+}
+
+enum ExpenseType{
+FOOD_EXPENSE,
+ELECTRIC_BILL, 
+CABLE_BILL, 
+INTERNET_BILL, 
+WATER_BILL, 
+MAINTANACE, 
+EMPLOYEE_SALARIES, 
+PROPERETY_TAX, 
+PROPERTY_RENT, 
+OTHERS
+}
+
+entity Expense {
+expenseType ExpenseType,
+ExpenseDate String,
+amount Long required,
+comment String
+}
+
+relationship OneToMany {
+    Pg{pgExpense} to Expense{pg(name)}
+}
+
+relationship OneToMany {
+    Pg{pgIssues} to Issue{pg(name)}
+}
+
+entity Issue {
+name String required maxlength(DEFAULT_MAX_LENGTH),
+description String required maxlength(DEFAULT_ADDRESS_LENGTH),
+isResolved Boolean,
+}
+
+dto * with mapstruct
+service * with serviceClass
